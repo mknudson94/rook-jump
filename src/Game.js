@@ -1,4 +1,5 @@
 import React from 'react';
+import boardGenerator from './boardGenerator.js';
 
 const easyBoard = [3, 4, 3, 2, 4, 
                    2, 3, 3, 3, 2,
@@ -48,16 +49,18 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeSquare: 0
+      activeSquare: 0,
+      board: boardGenerator(this.props.size)
     }
   }
 
   isNeighbor(i) {
     let active = this.state.activeSquare;
+    let board = this.state.board;
     let sameColumn = ((i - active) % this.props.size === 0);
     let sameRow = (Math.floor(i/5) === Math.floor(active/5));
-    let horizontalAway = (Math.abs(i-active) === easyBoard[active])
-    let verticalAway = (Math.abs(Math.floor(i / this.props.size) - Math.floor(active / this.props.size)) === easyBoard[active]);
+    let horizontalAway = (Math.abs(i-active) === board[active]);
+    let verticalAway = (Math.abs(Math.floor(i / this.props.size) - Math.floor(active / this.props.size)) === board[active]);
     return ((sameRow && horizontalAway) || (sameColumn && verticalAway)); 
   }
 
@@ -73,7 +76,7 @@ class Game extends React.Component {
     return(
       <div>
         <Board
-          squares={easyBoard}
+          squares={this.state.board}
           size={this.props.size} 
           onClick={(i) => this.handleClick(i)}
         />
