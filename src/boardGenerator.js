@@ -94,17 +94,31 @@ function initGameBoard(size) {
 }
 
 function boardGenerator(difficulty) {
+    let restartRate = 30 + 10 * difficulty;
     let size = Math.floor((difficulty - 1)/3) + 3;
     let gameBoard = initGameBoard(size);
     let thisFit = fitness(gameBoard, size, difficulty);
-    while (thisFit <= 1) {
+
+    // hill climb with random restart
+    // infinite loop, with inc variable
+    for (let i = 0; true; i++) {
         let neighbor = getNeighbor(gameBoard);
-        let neighborFitness = fitness(neighbor, size, difficulty)
-        if (neighborFitness > thisFit) gameBoard = neighbor;
-        thisFit = neighborFitness;
+        let neighborFitness = fitness(neighbor, size, difficulty);
+        
+        if (neighborFitness > thisFit) {
+            gameBoard = neighbor;
+            thisFit = neighborFitness;
+        }
+
+        if (thisFit > 1) {
+            return gameBoard;
+        } else if (i % restartRate === 0) {
+        // } else if (false) {
+            // RANDOM RESTART
+            // console.log('\n\nToo many steps. Restarting...\n');
+            gameBoard = initGameBoard(size);
+        }
     }
-    console.log(thisFit ? 'Board is solvable' : 'Board is impossible');
-    return gameBoard;
 }
 
 // const easyBoard = [3, 4, 3, 2, 4, 
@@ -115,6 +129,12 @@ function boardGenerator(difficulty) {
 
 // console.log(fitness(easyBoard, 5));
 
-// boardGenerator(3);
+// for (let j = 12; j < 15; j++) {
+//     console.log(`starting level ${j}`);
+//     let start = new Date;
+//     for (let i = 0; i < 5; i++) boardGenerator(j);
+//     let end = new Date;
+//     console.log(`Average time with restart (${j}): ${(end-start)/5}`);
+// }
 
 export default boardGenerator;
