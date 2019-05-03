@@ -94,7 +94,7 @@ function initGameBoard(size) {
 }
 
 function boardGenerator(difficulty) {
-    let size = Math.floor(difficulty/3) + 3;
+    let size = Math.floor((difficulty - 1)/3) + 3;
     let gameBoard = initGameBoard(size);
     let thisFit = fitness(gameBoard, size, difficulty);
     while (thisFit <= 1) {
