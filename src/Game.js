@@ -15,6 +15,7 @@ class Game extends React.Component {
     if (prevProps.difficulty !== this.props.difficulty) {
       console.log('updating board');
       this.setState({
+        activeSquare: 0,
         board: boardGenerator(this.props.difficulty),
         size: Math.floor((this.props.difficulty - 1) / 3) + 3
       });
