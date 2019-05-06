@@ -7,7 +7,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      difficulty: 4
+      difficulty: 5
     }
   }
 
@@ -22,7 +22,7 @@ class App extends React.Component {
     return (
       <div>
         Hello, world!
-        <Game 
+        <Game
           difficulty={this.state.difficulty}
         />
         <div>

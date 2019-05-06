@@ -14,12 +14,18 @@ function randomInt(max) {
 
 function lin2grid(i, size) {
     return {
-        row: i % size, 
-        col: Math.floor(i / size)
+        row: Math.floor(i / size),
+        col: i % size
     };
 }
 
-function isSuccessor(board, size, active, i) {
+function GameBoard(board, size, difficulty, fitness=0, solution=null) {
+    return {board, size, difficulty, fitness, solution};
+}
+
+function isSuccessor(gameBoard, active, i) {
+    let board = gameBoard.board;
+    let size = gameBoard.size;
     let sameColumn = ((i - active) % size === 0);
     let sameRow = (Math.floor(i/size) === Math.floor(active/size));
     let horizontalAway = (Math.abs(i-active) === board[active]);
@@ -27,12 +33,12 @@ function isSuccessor(board, size, active, i) {
     return ((sameRow && horizontalAway) || (sameColumn && verticalAway)); 
   }
 
-function fitness(gameBoard, size, difficulty) {
+function fitness(gameBoard) {
     // fitness of board, fitness of 0 means no solutions.
     let fitness = 0;
     let frontier = [];
     let explored = [];
-    let goal = gameBoard.length - 1;
+    let goal = gameBoard.board.length - 1;
 
     let paths = {
         0: [0],
@@ -45,8 +51,8 @@ function fitness(gameBoard, size, difficulty) {
         explored.push(curr);
         let successors = [];
         // TODO: optimize this
-        for (let i = 0; i < gameBoard.length; i++) {
-            if (isSuccessor(gameBoard, size, curr, i)) {
+        for (let i = 0; i < gameBoard.board.length; i++) {
+            if (isSuccessor(gameBoard, curr, i)) {
                 successors.push(i);
             }
         }
@@ -59,82 +65,57 @@ function fitness(gameBoard, size, difficulty) {
             } 
         };
     }
-    if (fitness === 0) return fitness;
+    if (paths.hasOwnProperty(goal)) fitness *= paths[goal].length / gameBoard.difficulty;
 
-    fitness *= paths[goal].length / difficulty;
-    // console.log(paths);
-    console.log(fitness);
-    if (fitness > 1) console.log(paths);
-
-    return fitness;
+    return GameBoard(gameBoard.board, gameBoard.size, gameBoard.difficulty, fitness, paths[goal]);
 }
 
 function getNeighbor(gameBoard) {
     // randomly change a square's value to the value of another square.
     // This bypasses the need to calculate the max permissible value.
     // Swap with any square other than goal(choose from index 0 to length - 2), which is 0.
-    let neighbor = gameBoard.slice();
-    neighbor[randomInt(gameBoard.length - 1)] = neighbor[randomInt(gameBoard.length - 2)];
-    return neighbor;
+    let neighbor = gameBoard.board.slice();
+    neighbor[randomInt(neighbor.length - 2)] = neighbor[randomInt(neighbor.length - 2)];
+    return fitness(GameBoard(neighbor, gameBoard.size, gameBoard.difficulty));
 }
 
-function initGameBoard(size) {
-    let gameBoard = Array(size**2).fill(null);
+function initGameBoard(size, difficulty) {
+    let board = Array(size**2).fill(null);
     
     for (let i = 0; i < size**2; i++) {
         let pos = lin2grid(i, size);
         let max = Math.max(Math.abs(pos.row - Math.floor(size/2)), Math.abs(pos.col - Math.floor(size/2))) + Math.floor(size/2);
         // one's tricks to make sure we don't get any zeros
-        gameBoard[i] = randomInt(max - 1) + 1;
+        board[i] = randomInt(max - 1) + 1;
     }
 
-    gameBoard[gameBoard.length - 1] = 0;
+    board[board.length - 1] = 0;
 
-    return gameBoard;
+    return fitness(GameBoard(board, size, difficulty));
 }
 
 function boardGenerator(difficulty) {
     let restartRate = 30 + 10 * difficulty;
-    let size = Math.floor((difficulty - 1)/3) + 3;
-    let gameBoard = initGameBoard(size);
-    let thisFit = fitness(gameBoard, size, difficulty);
+    let size = Math.floor((difficulty - 1)/3) + 4;
+    let gameBoard = initGameBoard(size, difficulty);
 
     // hill climb with random restart
     // infinite loop, with inc variable
     for (let i = 0; true; i++) {
         let neighbor = getNeighbor(gameBoard);
-        let neighborFitness = fitness(neighbor, size, difficulty);
-        
-        if (neighborFitness > thisFit) {
+        if (neighbor.fitness > gameBoard.fitness) {
             gameBoard = neighbor;
-            thisFit = neighborFitness;
         }
 
-        if (thisFit > 1) {
+        if (gameBoard.fitness > 1) {
+            console.log(gameBoard);
             return gameBoard;
         } else if (i % restartRate === 0) {
-        // } else if (false) {
             // RANDOM RESTART
-            // console.log('\n\nToo many steps. Restarting...\n');
-            gameBoard = initGameBoard(size);
+            gameBoard = initGameBoard(size, difficulty);
         }
     }
 }
 
-// const easyBoard = [3, 4, 3, 2, 4, 
-//                    2, 3, 3, 3, 2,
-//                    3, 3, 2, 1, 3,
-//                    3, 2, 1, 3, 1,
-//                    4, 4, 3, 2, 0];
-
-// console.log(fitness(easyBoard, 5));
-
-// for (let j = 12; j < 15; j++) {
-//     console.log(`starting level ${j}`);
-//     let start = new Date;
-//     for (let i = 0; i < 5; i++) boardGenerator(j);
-//     let end = new Date;
-//     console.log(`Average time with restart (${j}): ${(end-start)/5}`);
-// }
-
 export default boardGenerator;
+export { lin2grid };
