@@ -115,8 +115,8 @@ class Board extends React.Component {
 class BoardOverlay extends React.Component {
       render() {
         console.log(this.props.path);
-        let width = 34
-        let height = 34;
+        let width = 33
+        let height = 33;
         
         let x = [] 
         let y = [];
@@ -127,12 +127,16 @@ class BoardOverlay extends React.Component {
 
         let shapes = []
         for (let i = 0; i < this.props.path.length - 1; i++) {
-          shapes.push(<line key={i*2} x1={x[i]} y1={y[i]} x2={x[i+1]} y2={y[i+1]} style={{stroke:"rgb(255,0,0)",strokeWidth:"2"}}/>);
+          let xDiff = x[i+1] - x[i];
+          let yDiff = y[i+1] - y[i];
+          let x1 = ( xDiff / 2 ) || ( yDiff / 4 );
+          let y1 = ( yDiff / 2 ) || ( -xDiff / 4 );
+          shapes.push(<path key={i*2} d={`M ${x[i]} ${y[i]} Q ${x[i] + x1} ${y[i] + y1}, ${x[i+1]} ${y[i+1]}`} stroke="black" fill="transparent"/>);
           shapes.push(<circle key={i*2 + 1} cx={x[i+1]} cy={y[i+1]} r="5" fill="red" />);
         }
 
         return (
-          <svg className="overlay" height="210" width="500">
+          <svg className="overlay" height={height * this.props.size} width={width * this.props.size}>
             {shapes}
           </svg>
         );

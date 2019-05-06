@@ -21,7 +21,6 @@ class App extends React.Component {
 
     return (
       <div>
-        Hello, world!
         <Game
           difficulty={this.state.difficulty}
         />
@@ -30,7 +29,7 @@ class App extends React.Component {
             difficulty={this.state.difficulty}
             onChange={e => this.handleOptionChange(e)}
           />
-        </div>
+        </div>    
       </div>
     );
   }
