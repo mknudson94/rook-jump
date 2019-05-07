@@ -108,6 +108,10 @@ function boardGenerator(difficulty) {
         }
 
         if (gameBoard.fitness > 1) {
+            //prep for return
+            let solution = [];
+            gameBoard.solution.forEach(i => solution.push(lin2grid(i, gameBoard.size)));
+            gameBoard.solution = solution;
             console.log(gameBoard);
             return gameBoard;
         } else if (i % restartRate === 0) {
