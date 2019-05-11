@@ -2,10 +2,11 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://gitname.github.io/rook-jump",
+  "homepage": "http://mknudson94.github.io/rook-jump",
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "@material-ui/icons": "^3.0.2",
+    "gh-pages": "^2.0.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.0"
