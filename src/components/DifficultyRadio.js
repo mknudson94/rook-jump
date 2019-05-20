@@ -9,7 +9,7 @@ const styles = ({
   },
 });
 
-class DifficultyRadio extends React.Component {
+class DifficultyRadio extends Component {
     render() {
       const { classes } = this.props;
       let buttons = [];

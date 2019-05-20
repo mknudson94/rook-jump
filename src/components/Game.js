@@ -4,6 +4,7 @@ import BoardOverlay from './BoardOverlay';
 import DifficultyRadio from './DifficultyRadio';
 import boardGenerator, { lin2grid } from '../boardGenerator.js';
 
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -11,7 +12,6 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import Divider from '@material-ui/core/Divider';
 import Collapse from '@material-ui/core/Collapse';
 
@@ -19,22 +19,25 @@ import {withStyles} from '@material-ui/core/styles';
 
 const styles = theme => ({
   containerCard: {
-    minHeight: 292,
     maxWidth: 550,
     margin: 'auto',
     padding: 10,
   },
   cardContent: {
-    width: '100%',
+    // width: '100%',
     display: 'flex',
     justifyContent: 'space-around',
     alignItems: 'center',
   },
   boardAndOverlayContainer: {
     position: 'relative',
+    height: 256,
+    minWidth: 256,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   board: {
-
   },
   overlay: {
     position: 'absolute',
@@ -42,10 +45,20 @@ const styles = theme => ({
   controls: {
     display: 'flex',
     flexDirection: 'column',
-    height: '100%',
     justifyContent: 'space-around',
-    margin: '20px 0',
     textAlign: 'center',
+    [theme.breakpoints.down('xs')]: {
+      margin: '0 20px',
+    },
+    [theme.breakpoints.up('sm')]: {
+      margin: '20px 0',
+    },
+  },
+  gameMessageContainer: {
+    height: 65,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
   actionButton: {
     display: 'block',
@@ -149,56 +162,66 @@ class Game extends React.Component {
     let activeSquare = lin2grid(this.state.activeSquare, this.state.boardData.size);
     let string = this.state.activeSquare === goal ? 
       this.state.userPath.length === this.state.boardData.solution.length ?
-        (<Typography variant='subtitle2'>You win!</Typography>)
+        (<>You win!</>)
         :
-        (<Typography variant='subtitle2'>Good job! {<br/>}But that's not the shortest solution...</Typography>)
+        (<>Good job! {<br/>}But that's not the shortest solution...</>)
       : 
-      (<Typography variant='subtitle2'>{`Active square: (${activeSquare.row}, ${activeSquare.col})`}</Typography>);
+      (<>{`Active square: (${activeSquare.row}, ${activeSquare.col})`}</>);
     return(
       <Card className={classes.containerCard}>
-      <CardContent className={classes.cardContent}>
-        <div className={classes.boardAndOverlayContainer}>
-          <div className={classes.overlay}>
-            <BoardOverlay 
+      <CardContent>
+        <Grid container spacing={0} styles={{justifyContent: 'center', }}>
+          <Grid item xs={12} sm={7} className={classes.boardAndOverlayContainer}>
+            <div className={classes.overlay}>
+              <BoardOverlay 
+                size={this.state.boardData.size}
+                path={this.state.reveal ? this.state.boardData.solution : this.state.userPath}
+                styles={{
+                  left:0,
+                  right: 0,
+                }}
+              />
+            </div>
+            <Board
+              className={classes.board}
+              squares={this.state.boardData.board}
+              difficulty={this.props.difficulty} 
               size={this.state.boardData.size}
-              path={this.state.reveal ? this.state.boardData.solution : this.state.userPath}
+              onClick={(i) => this.handleClick(i)}
             />
-          </div>
-          <Board
-            className={classes.board}
-            squares={this.state.boardData.board}
-            difficulty={this.props.difficulty} 
-            size={this.state.boardData.size}
-            onClick={(i) => this.handleClick(i)}
-          />
-        </div>
-        <div className={classes.controls}>
-          {string}
-          <Divider style={{margin:'16px 0'}}/>
-          <div>
-            <Button 
-              className={classes.actionButton} 
-              variant='outlined' 
-              color='inherit'
-              size='small'
-              onClick={() => this.handleUndo()}
-            >
-              Undo
-            </Button>
-            <Button 
-              className={classes.actionButton} 
-              variant='outlined' 
-              color='inherit' 
-              size='small'
-              onClick={() => this.handleSolveClick()}
-            >
-              {this.state.reveal ? 'Hide solution' : 'Reveal solution'}
-            </Button>
-          </div>
-        </div>
+          </Grid>
+          <Grid item xs={12} sm={5} className={classes.controls}>
+            <div className={classes.gameMessageContainer}>
+              <Typography variant='subtitle2'>
+                {string}
+              </Typography>
+            </div>
+            <Divider style={{margin:'16px 0'}}/>
+            <div>
+              <Button 
+                className={classes.actionButton} 
+                variant='outlined' 
+                color='inherit'
+                size='small'
+                onClick={() => this.handleUndo()}
+              >
+                Undo
+              </Button>
+              <Button 
+                className={classes.actionButton} 
+                variant='outlined' 
+                color='inherit' 
+                size='small'
+                onClick={() => this.handleSolveClick()}
+              >
+                {this.state.reveal ? 'Hide solution' : 'Reveal solution'}
+              </Button>
+            </div>
+          </Grid>
+          </Grid>
         </CardContent>
         <CardActions className={classes.actions} disableActionSpacing>
-          <Typography variant='caption' style={{marginLeft:'auto'}} onClick={this.handleExpandClick}>Change difficulty</Typography>
+          <Typography variant='caption' style={{marginLeft:'auto', cursor: 'pointer'}} onClick={this.handleExpandClick}>Change difficulty</Typography>
           <IconButton
             className={this.state.expanded ? classes.expandOpen : classes.expand}
             onClick={this.handleExpandClick}

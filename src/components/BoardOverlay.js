@@ -9,7 +9,7 @@ const styles = ({
   }
 });
 
-class BoardOverlay extends React.Component {
+class BoardOverlay extends Component {
 
   render() {
     const { classes, size } = this.props;

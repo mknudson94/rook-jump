@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {withStyles} from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import './Board.css';
 
 const styles = ({
     square: {
@@ -20,7 +19,9 @@ const styles = ({
         padding: 0,
         textAlign: 'center',
       },
-      hover: {},
+    rows: {
+      display: 'inline-block',
+    },
 });
 
 function Square(props) {
@@ -31,7 +32,7 @@ function Square(props) {
   );
 }
   
-  class Board extends React.Component {
+  class Board extends Component {
   
   renderSquare(i) {
     return(
@@ -46,19 +47,19 @@ function Square(props) {
     
     render() {
       let rows = []
-      
+      const { classes } = this.props;
       for (let i = 0; i < this.props.size; i++) {
         let squares = [];
         for (let j = 0; j < this.props.size; j++) {
           let index = i * this.props.size + j;
           squares.push(this.renderSquare(index));
         }
-        rows.push(<div key={i} className="board-row">{squares}</div>);
+        rows.push(<div key={i} styles={{}}>{squares}</div>);
       }
   
   
       return(
-        <div>
+        <div className={classes.rows}>
           {rows}
         </div>
       );
