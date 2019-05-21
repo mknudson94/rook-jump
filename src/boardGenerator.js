@@ -112,6 +112,7 @@ function boardGenerator(difficulty) {
             let solution = [];
             gameBoard.solution.forEach(i => solution.push(lin2grid(i, gameBoard.size)));
             gameBoard.solution = solution;
+            gameBoard.iterations = i + 1;
             console.log(gameBoard);
             return gameBoard;
         } else if (i % restartRate === 0) {

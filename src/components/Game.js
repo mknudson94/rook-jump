@@ -7,19 +7,27 @@ import boardGenerator, { lin2grid } from '../boardGenerator.js';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
-import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
 import Collapse from '@material-ui/core/Collapse';
 
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import UndoIcon from '@material-ui/icons/Undo';
+import RestoreIcon from '@material-ui/icons/Restore';
+
 import {withStyles} from '@material-ui/core/styles';
+
+import Odometer from 'react-odometerjs';
+import 'odometer/themes/odometer-theme-plaza.css';
+import { Animated } from "react-animated-css";
 
 const styles = theme => ({
   containerCard: {
-    maxWidth: 550,
+    maxWidth: 620,
     margin: 'auto',
     padding: 10,
   },
@@ -39,10 +47,14 @@ const styles = theme => ({
   },
   board: {
   },
-  overlay: {
+  overlayContainer: {
     position: 'absolute',
   },
-  controls: {
+  overlay: {
+    display: 'inline-block',
+    verticalAlign: 'middle',
+  },
+  secondaryPanel: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-around',
@@ -62,8 +74,9 @@ const styles = theme => ({
   },
   actionButton: {
     display: 'block',
-    margin: 'auto',
-    marginBottom: '6px',
+    margin: '20px 10px',
+    // background: blue,
+    color: 'white',
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -79,6 +92,19 @@ const styles = theme => ({
   },
 });
 
+function NumIterations(props) {
+  return (
+  <Odometer 
+  style={{
+    'first-child':{
+      visibility: 'hidden'
+    }
+  }} 
+  value={props.i}
+  format='(ddd)'
+  />);
+};
+
 class Game extends React.Component {
   constructor(props) {
     super(props);
@@ -89,6 +115,7 @@ class Game extends React.Component {
       history: [],
       reveal: false,
       expanded: false,
+      bounce: false,
     }
   }
 
@@ -96,17 +123,37 @@ class Game extends React.Component {
     this.setState(state => ({ expanded: !state.expanded }));
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.difficulty !== this.props.difficulty) {
       console.log('updating board');
       this.setState({
         activeSquare: 0,
         boardData: boardGenerator(this.props.difficulty),
-        path: [{row:0, col:0}],
+        userPath: [{row:0, col:0}],
         reveal: false
       });
-
   }
+  const goal = this.state.boardData.size**2 - 1;
+  console.log(this.state.activeSquare, goal, prevState.activeSquare, goal);
+  if (this.state.activeSquare === goal && prevState.activeSquare !== goal
+    && this.state.userPath.length > this.state.boardData.solution.length) {
+    console.log('bouncing!');
+    this.setState({bounce: true});
+    this.forceUpdate(() => {
+      setTimeout(() => {
+        this.setState({bounce: false});
+      }, 1000);
+    });
+    }
+  //   setTimeout(() => {
+  //     console.log('bouncing timeout');
+  //     this.setState({bounce: false});
+  //   }, 500);
+  // }
+  // if (this.state.bounce) {
+  //   console.log('not bouncing');
+  //   this.setState({bounce: false});
+  // } 
 }
 
   isSuccessor(i) {
@@ -155,12 +202,19 @@ class Game extends React.Component {
     });
   }
 
+  handleReset() {
+    this.setState({
+      activeSquare: 0,
+      userPath: [{row:0, col:0}],
+      reveal: false
+    });
+  }
+
   render() {
     const { classes } = this.props;
-    console.log(classes);
-    let goal = this.state.boardData.size**2 - 1;
-    let activeSquare = lin2grid(this.state.activeSquare, this.state.boardData.size);
-    let string = this.state.activeSquare === goal ? 
+    const goal = this.state.boardData.size**2 - 1;
+    const activeSquare = lin2grid(this.state.activeSquare, this.state.boardData.size);
+    const string = this.state.activeSquare === goal ? 
       this.state.userPath.length === this.state.boardData.solution.length ?
         (<>You win!</>)
         :
@@ -171,16 +225,30 @@ class Game extends React.Component {
       <Card className={classes.containerCard}>
       <CardContent>
         <Grid container spacing={0} styles={{justifyContent: 'center', }}>
-          <Grid item xs={12} sm={7} className={classes.boardAndOverlayContainer}>
-            <div className={classes.overlay}>
-              <BoardOverlay 
-                size={this.state.boardData.size}
-                path={this.state.reveal ? this.state.boardData.solution : this.state.userPath}
-                styles={{
-                  left:0,
-                  right: 0,
-                }}
-              />
+          <Grid item xs={12} sm={6} className={classes.boardAndOverlayContainer}>
+            <div className={classes.overlayContainer}>
+              <div className={classes.overlay}>
+                <BoardOverlay
+                  size={this.state.boardData.size}
+                  path={this.state.reveal ? this.state.boardData.solution : this.state.userPath}
+                />
+              </div>
+              <div style={{visibility:'hidden', display:'inline-block'}}>
+                {/* fake button */}
+                <Fab 
+                  size='small'
+                  className={classes.actionButton}
+                >
+                  <UndoIcon/>
+                </Fab>
+                {/* fake button */}
+                <Fab
+                  size='small'
+                  className={classes.actionButton}
+                >
+                  <RestoreIcon/>
+                </Fab>
+              </div>
             </div>
             <Board
               className={classes.board}
@@ -189,8 +257,36 @@ class Game extends React.Component {
               size={this.state.boardData.size}
               onClick={(i) => this.handleClick(i)}
             />
+            <div>
+            <Fab 
+              className={classes.actionButton} 
+              size='small'
+              color='primary'
+              onClick={() => this.handleUndo()}
+            >
+              <UndoIcon/>
+            </Fab>
+            <Animated
+              animationOut='bounce'
+              animationOutDelay={300}
+              isVisible={!this.state.bounce}
+              animationInDuration={0}
+            >
+              <Fab
+                className={classes.actionButton}
+                size='small'
+                color='secondary'
+                onClick={() => this.handleReset()}
+              >
+                <RestoreIcon/>
+              </Fab>
+            </Animated>
+          </div>
           </Grid>
-          <Grid item xs={12} sm={5} className={classes.controls}>
+          <Grid item xs={12} sm={5} className={classes.secondaryPanel}>
+            <Typography container='div' variant='caption'>
+              Maze successfully generated after <NumIterations i={this.state.boardData.iterations} classes={classes}/> iterations.
+            </Typography>
             <div className={classes.gameMessageContainer}>
               <Typography variant='subtitle2'>
                 {string}
@@ -199,22 +295,13 @@ class Game extends React.Component {
             <Divider style={{margin:'16px 0'}}/>
             <div>
               <Button 
-                className={classes.actionButton} 
-                variant='outlined' 
-                color='inherit'
-                size='small'
-                onClick={() => this.handleUndo()}
-              >
-                Undo
-              </Button>
-              <Button 
-                className={classes.actionButton} 
-                variant='outlined' 
+                className={classes.revealButton} 
+                variant={this.state.reveal ? 'outlined' : 'contained'}
                 color='inherit' 
                 size='small'
                 onClick={() => this.handleSolveClick()}
               >
-                {this.state.reveal ? 'Hide solution' : 'Reveal solution'}
+                Reveal solution
               </Button>
             </div>
           </Grid>
