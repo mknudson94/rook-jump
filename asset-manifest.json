@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.js": "/rook-jump/static/js/main.881c631e.chunk.js",
-    "main.js.map": "/rook-jump/static/js/main.881c631e.chunk.js.map",
+    "main.js": "/rook-jump/static/js/main.71a3ee8c.chunk.js",
+    "main.js.map": "/rook-jump/static/js/main.71a3ee8c.chunk.js.map",
     "runtime~main.js": "/rook-jump/static/js/runtime~main.53291070.js",
     "runtime~main.js.map": "/rook-jump/static/js/runtime~main.53291070.js.map",
     "static/css/2.ab27a349.chunk.css": "/rook-jump/static/css/2.ab27a349.chunk.css",
     "static/js/2.324615b0.chunk.js": "/rook-jump/static/js/2.324615b0.chunk.js",
     "static/js/2.324615b0.chunk.js.map": "/rook-jump/static/js/2.324615b0.chunk.js.map",
     "index.html": "/rook-jump/index.html",
-    "precache-manifest.1a9037b535860a7511a5370786e8bc08.js": "/rook-jump/precache-manifest.1a9037b535860a7511a5370786e8bc08.js",
+    "precache-manifest.c58bcc5eff16de9e922a78faab7378eb.js": "/rook-jump/precache-manifest.c58bcc5eff16de9e922a78faab7378eb.js",
     "service-worker.js": "/rook-jump/service-worker.js",
     "static/css/2.ab27a349.chunk.css.map": "/rook-jump/static/css/2.ab27a349.chunk.css.map"
   }

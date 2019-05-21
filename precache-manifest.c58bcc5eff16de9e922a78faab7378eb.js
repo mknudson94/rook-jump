@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "c681ee301ed02414baf454352ab3479e",
+    "revision": "50f7827e5bd39d7d99f3944980144c02",
     "url": "/rook-jump/index.html"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/rook-jump/static/js/2.324615b0.chunk.js"
   },
   {
-    "revision": "544d59d9ff1cb13bd30c",
-    "url": "/rook-jump/static/js/main.881c631e.chunk.js"
+    "revision": "978a762d47ea5ccaf011",
+    "url": "/rook-jump/static/js/main.71a3ee8c.chunk.js"
   },
   {
     "revision": "ef92df3c482edbd8244d",
