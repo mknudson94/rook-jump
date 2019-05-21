@@ -1,1 +1,0 @@
-{"version":3,"sources":["Board.css"],"names":[],"mappings":"AAAA,iBACE,UAAW,CACX,UAAW,CACX,aACF","file":"main.88ae7a5d.chunk.css","sourcesContent":[".board-row:after {\r\n  clear: both;\r\n  content: \"\";\r\n  display: table;\r\n}"]}
